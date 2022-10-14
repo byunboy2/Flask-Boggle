@@ -26,16 +26,17 @@ class BoggleAppTestCase(TestCase):
             html = response.get_data(as_text=True)
 
             self.assertEqual(response.status_code,200)
-            self.assertIn("<title>Boggle</title>",html)
+            self.assertIn("<!-- BASE TEMPLATE FOR TESTING PURPOSES -->",html)
             # test that you're getting a template
 
     def test_api_new_game(self):
         """Test starting a new game."""
 
-        with self.client as client:
-            response = client.post("/api/new-game",data=games)
-            html = response.get_data(as_text=True)
-            
-            self.assertEqual(response.status_code,200)
-            self.assertIn("<title>Boggle</title>",html)
+        # with self.client as client:
+        #     response = client.post("/api/new-game",data=games)
+        #     # html = response.get_data(as_text=True)
+
+        #     self.assertEqual(response.status_code,200)
+        #     self.assertIn()
+            # self.assertIn("<title>Boggle</title>",html)
             # write a test for this route
