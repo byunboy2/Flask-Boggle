@@ -26,4 +26,26 @@ def new_game():
     game = BoggleGame()
     games[game_id] = game
 
-    return {"gameId": "need-real-id", "board": "need-real-board"}
+    return jsonify(gameId = game_id, board = game.board)
+
+@app.post("/api/score-word")
+def score_word():
+    """
+       Score word if legal and return JSON
+       Takes in JSON: {game_id, word}
+       - if not a word: {result: "not-word"}
+       - if not on board: {result: "not-on-board"}
+       - if a valid word: {result: "ok"}
+    """
+
+    word = request.json["word"].upper()
+    game_id = request.json["gameId"]
+    game = games[game_id]
+
+    if not game.is_word_in_word_list(word):
+        return jsonify(result = "not-word")
+    elif not game.check_word_on_board(word):
+        return jsonify(result = "not-on-board")
+    else:
+        game.play_and_score_word(word)
+        return jsonify(result = "ok")
