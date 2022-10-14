@@ -34,9 +34,12 @@ class BoggleAppTestCase(TestCase):
 
         with self.client as client:
             response = client.post("/api/new-game")
-            json_response = response.get_json()
-            game_id = json_response["gameId"]
+            data = response.get_json() 
+            game_id = data["gameId"]
+            board = data["board"]
 
+            self.assertTrue(isinstance(game_id,str))
+            self.assertTrue(isinstance(board,list))
             self.assertEqual(response.status_code,200)
             self.assertIn(game_id, games)
             # write a test for this route
