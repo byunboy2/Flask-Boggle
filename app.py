@@ -49,3 +49,5 @@ def score_word():
     else:
         game.play_and_score_word(word)
         return jsonify(result = "ok")
+
+
