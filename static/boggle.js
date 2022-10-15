@@ -13,6 +13,7 @@ let gameId;
 
 async function start() {
   let response = await axios.post("/api/new-game");
+  console.log(response)
   gameId = response.data.gameId;
   let board = response.data.board;
 
@@ -27,14 +28,14 @@ function displayBoard(board) {
   for(let row of board){
     let $row =$("<tr></tr>");
     for(let cell of row){
-      print(cell)
-      $row.append($("<td><td>"));
+      $row.append($(`<td>${cell}</td>`));
     }
     $table.append($row)
   }
 }
 
-async function scoreWord(){
+async function scoreWord(event){
+  event.preventDefault();
   let response = await axios.post("/api/score-word",{
     word: $wordInput.val(),
     gameId: gameId
@@ -50,5 +51,5 @@ async function scoreWord(){
 }
 
 
-$wordInput.on("submit",scoreWord)
+$form.on("submit",scoreWord)
 start();
