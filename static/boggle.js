@@ -13,7 +13,6 @@ let gameId;
 
 async function start() {
   let response = await axios.post("/api/new-game");
-  console.log(response)
   gameId = response.data.gameId;
   let board = response.data.board;
 
@@ -23,33 +22,69 @@ async function start() {
 /** Display board */
 
 function displayBoard(board) {
-   $table.empty();
-  // loop over board and create the DOM tr/td structure
-  for(let row of board){
-    let $row =$("<tr></tr>");
-    for(let cell of row){
-      $row.append($(`<td>${cell}</td>`));
+  $table.empty();
+  for (let row of board) {
+    let $tr = $("<tr>");
+    for (let letter of row) {
+      $tr.append(`<td>${letter}</td>`);
     }
-    $table.append($row)
+    $table.append($tr);
   }
 }
 
-async function scoreWord(event){
-  event.preventDefault();
-  let response = await axios.post("/api/score-word",{
-    word: $wordInput.val(),
-    gameId: gameId
+/** Handle form submit: submit to API, focus on input. */
+
+async function handleFormSubmit(evt) {
+  evt.preventDefault();
+
+  const word = $wordInput.val().toUpperCase();
+  if (!word) return;
+
+  await submitWordToAPI(word);
+
+  $wordInput.val("").focus();
+}
+
+$form.on("submit", handleFormSubmit);
+
+
+/** Submit word to API and handle response. */
+
+async function submitWordToAPI(word) {
+  const response = await axios({
+    url: "/api/score-word",
+    method: "POST",
+    data: { word, gameId }
   });
-  if(response === "not-word" || "not-on-board"){
-    $message.empty();
-    $message.append($("Not legal play"));
+
+  const { result } = response.data;
+
+  if (result === "not-word") {
+    showMessage(`Not valid word: ${word}`, "err");
+  } else if (result === "not-on-board") {
+    showMessage(`Not on board: ${word}`, "err");
   } else {
-    $playedwords.append($wordInput.val());
+    showWord(word);
+    showMessage(`Added: ${word}`, "ok");
   }
-
-
 }
 
 
-$form.on("submit",scoreWord)
+/** Add word to played word list in DOM */
+
+function showWord(word) {
+  $($playedWords).append($("<li>", { text: word }));
+}
+
+
+/** Show status message. */
+
+function showMessage(msg, cssClass) {
+  $message
+    .text(msg)
+    .removeClass()
+    .addClass(`msg ${cssClass}`);
+}
+
+
 start();
